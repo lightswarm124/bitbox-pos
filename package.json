@@ -1,7 +1,7 @@
 {
-  "name": "react-redux-boilerplate",
-  "version": "1.0.0",
-  "description": "A minimal react-redux boilerplate with all the best practices",
+  "name": "bitbox-pos",
+  "version": "0.0.1",
+  "description": "A minimal react-redux boilerplate with all the best practices for bitcoin cash",
   "repository": {
     "type": "git",
     "url": "git://github.com/flexdinesh/react-redux-boilerplate.git"
@@ -13,18 +13,18 @@
   "author": "Dinesh Pandiyan",
   "license": "MIT",
   "scripts": {
-    "prebuild": "npm run build:clean",
+    "prebuild": "yarn build:clean",
     "build": "cross-env NODE_ENV=production webpack --config config/webpack.prod.babel.js --color -p --progress --hide-modules --display-optimization-bailout",
     "build:clean": "rimraf ./build",
     "start": "cross-env NODE_ENV=development node server",
-    "start:production": "npm run test && npm run build && npm run start:prod",
+    "start:production": "yarn test && yarn build && yarn start:prod",
     "start:prod": "cross-env NODE_ENV=production node server",
-    "clean": "npm run test:clean && npm run build:clean",
-    "lint": "npm run lint:js",
+    "clean": "yarn test:clean && yarn build:clean",
+    "lint": "yarn lint:js",
     "lint:eslint": "eslint --ignore-path .gitignore",
     "eslint:fix": "eslint -- . --ignore-path .gitignore --fix",
-    "lint:js": "npm run lint:eslint -- . ",
-    "pretest": "npm run test:clean && npm run lint",
+    "lint:js": "yarn lint:eslint -- . ",
+    "pretest": "yarn test:clean && yarn lint",
     "test:clean": "rimraf ./coverage",
     "test": "cross-env NODE_ENV=test jest --coverage",
     "test:watch": "cross-env NODE_ENV=test jest --watchAll"

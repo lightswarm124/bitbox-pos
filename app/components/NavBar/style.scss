@@ -1,0 +1,98 @@
+nav.navbar {
+  line-height: 35px;
+  background: rgba(255, 255, 255, 0.9);
+  position: fixed;
+  top: 0;
+  left: 0;
+  padding: 0;
+  width: 100vw;
+  z-index: 99;
+}
+
+nav.navbar .title {
+  padding: 0 20px;
+  background: #222;
+  font-family: 'Source Sans Pro';
+  color: #fff;
+  text-decoration: none;
+  font-size: 20px;
+}
+
+nav.navbar .title svg {
+  height: 20px;
+  margin: 15px 0;
+  fill: #fff;
+}
+
+nav.navbar a {
+  display: flex;
+  float: left;
+}
+
+nav.navbar ul {
+  margin: 0;
+  padding: 0 10px;
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  height: 100%;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+  -webkit-flex-direction: row;
+  -webkit-box-align: stretch;
+  -webkit-align-items: stretch;
+  float: left;
+}
+
+nav.navbar ul a {
+  display: flex;
+  padding: 0 10px;
+  text-decoration: none;
+  color: #555;
+}
+
+nav.navbar ul a:hover {
+  color: #000;
+}
+
+nav.navbar ul a:last-child {
+  padding-right: 20px;
+}
+
+nav.navbar ul a span {
+  white-space: pre;
+  letter-spacing: -.5px;
+}
+
+nav ul a {
+  transition: .3s cubic-bezier(.77, 0, .175, 1);
+}
+
+.btn-close svg {
+  padding: 16px 0;
+  display: inherit;
+}
+
+.overlay {
+  position: fixed;
+  top: 50px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  opacity: 0;
+  visibility: hidden;
+  transition: .3s cubic-bezier(.77, 0, .175, 1);
+}
+
+.title img {
+  height: 30px;
+  fill: #fff;
+}

@@ -13,7 +13,7 @@ import { Switch, Route } from 'react-router-dom';
 import HomePage from 'containers/HomePage/Loadable';
 import FeaturePage from 'containers/FeaturePage/Loadable';
 import NotFoundPage from 'containers/NotFoundPage/Loadable';
-import Header from 'components/Header';
+import NavBar from 'components/NavBar';
 import Footer from 'components/Footer';
 import './style.scss';
 
@@ -25,7 +25,7 @@ const App = () => (
     >
       <meta name="description" content="A React.js Boilerplate application" />
     </Helmet>
-    <Header />
+    <NavBar />
     <Switch>
       <Route exact path="/" component={HomePage} />
       <Route path="/features" component={FeaturePage} />

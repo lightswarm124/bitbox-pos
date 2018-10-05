@@ -1,14 +1,16 @@
 /* eslint consistent-return:0 */
 
 const express = require('express');
-const logger = require('./util//logger');
+const app = express();
+const { resolve } = require('path');
+const http = require('http').Server(app);
+const io = require('socket.io')(http);
 
+const logger = require('./util//logger');
 const argv = require('./util/argv');
 const port = require('./util//port');
 const setup = require('./middlewares/frontendMiddleware');
-const { resolve } = require('path');
 
-const app = express();
 
 // If you need a backend, e.g. an API, add your custom backend-specific middleware here
 // app.use('/api', myApi);
@@ -30,4 +32,15 @@ app.listen(port, host, (err) => {
     return logger.error(err.message);
   }
   logger.appStarted(port, prettyHost);
+});
+
+io.on('connection', socket => {
+  console.log('User connected');
+  socket.on('event', message => {
+    console.log(message);
+    io.emit('event', message);
+  })
+  socket.on('disconnect', () => {
+    console.log('User disconnected');
+  });
 });

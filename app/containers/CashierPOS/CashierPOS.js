@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Helmet } from 'react-helmet';
 import axios from 'axios';
 import QRCode from 'qrcode-react';
-import Button from '@material-ui/core/Button';
+import { Button, TextField } from '@material-ui/core/Button';
 
 let BITBOXCli = require('bitbox-cli/lib/bitbox-cli').default;
 let BITBOX = new BITBOXCli();
@@ -12,8 +12,7 @@ import './style.scss';
 import IMG from '../../images/bitcoin-bay.jpg';
 let prices = {};
 
-let xpub = "xpub6C6EThH99dAScJJP16oobAKyaVmviS9uNZR4n1dRZxz4icFuaYvLHRt8aKpaMQYsWNH17JxpcwS4" +
-    "EGcTv47UrH821UoY2utXaATFswDdiZK";
+let publickey = "bitcoincash:qzm47qz5ue99y9yl4aca7jnz7dwgdenl85jkfx3znl";
 
 let defaultWebURL = "https://www.meetup.com/The-Bitcoin-Bay";
 
@@ -29,9 +28,9 @@ export default class CashierPOS extends Component {
     this.state = {
       cryptoPrice: [],
       isLoading: false,
-      url: xpub,
-      amountF: 0,
-      amountC: 0,
+      url: publickey,
+      amountFiat: 0,
+      amountCrypto: 0,
       fiat: 'CAD',
     }
   }
@@ -48,19 +47,19 @@ export default class CashierPOS extends Component {
         this.setState({
           cryptoPrice: crypto
         }, () => console.log(this.state.cryptoPrice));
-      })
+      });
   }
 
   handleClick = (payAmount) => {
     if (payAmount == 0) {
+      console.log("no amount entered");
       return;
     } else {
       this.setState({isLoading: true});
       let paymentValue = this.convertPrice(payAmount);
-      let paymentAddress = generateNewAddress(xpub, 1);
-      let paymentURL = getBIP21URL(paymentAddress, paymentValue, "Bitcoin Bay");
+      let paymentURL = getBIP21URL(publickey, paymentValue, "Built by Bitcoin Bay");
       this.updatePrices();
-      this.setState({url: paymentURL, amountC: paymentValue, amountF: parseFloat(payAmount), isLoading: false});
+      this.setState({url: paymentURL, amountCrypto: paymentValue, amountFiat: parseFloat(payAmount), isLoading: false});
     }
   }
 
@@ -77,20 +76,22 @@ export default class CashierPOS extends Component {
           <h4>Price</h4>
           <p>{this.state.cryptoPrice.CAD}</p>
           {
-            this.state.url == xpub
+            this.state.url == publickey
             ? <QRCode value={defaultWebURL}/>
             : <div>
                 <QRCode value={this.state.url}/>
                 <p>{this.state.url}</p>
                 <h4>BCH</h4>
-                <p>{this.state.amountC}</p>
+                <p>{this.state.amountCrypto}</p>
               </div>
           }
-          <div className="pad">
-            <Button variant="contained" color="primary">
+          {/*<div className="pad">
+          <TextField id="paymentAmount" value={this.state.amountFiat} />
+            <Button variant="contained" color="primary" onClick={this.handleClick.bind(this)}>
               Test
             </Button>
           </div>
+          */}
         </div>
       </article>
     );

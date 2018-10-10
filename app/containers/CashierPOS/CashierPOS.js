@@ -3,14 +3,14 @@ import PropTypes from 'prop-types';
 import { Helmet } from 'react-helmet';
 import axios from 'axios';
 import QRCode from 'qrcode-react';
-import Button from '@material-ui/core/Button';
-import NumberFormat from 'react-number-format';
+import NumPad from 'react-numpad';
 
 let BITBOXCli = require('bitbox-cli/lib/bitbox-cli').default;
 let BITBOX = new BITBOXCli();
 
 import './style.scss';
 import IMG from '../../images/bitcoin-bay.jpg';
+
 let prices = {};
 
 let publickey = "bitcoincash:qzm47qz5ue99y9yl4aca7jnz7dwgdenl85jkfx3znl";
@@ -54,22 +54,25 @@ export default class CashierPOS extends Component {
       });
   }
 
-  handleClick = () => {
-    if (this.state.amountFiat === 0) {
+  handleClick = (value) => {
+    if (value === 0) {
       console.log("no amount entered");
       return;
     } else {
       this.setState({ isLoading: true });
-      let paymentValue = this.convertPrice(this.state.amountFiat);
+      let paymentValue = this.convertPrice(value);
       let paymentURL = getBIP21URL(publickey, paymentValue, "Built by Bitcoin Bay");
       this.updatePrices();
       this.setState({ url: paymentURL, amountCrypto: paymentValue, isLoading: false });
     }
   }
 
-  onValueChange = e => this.setState({
-    amountFiat: e.floatvalue
-  })
+  onValueChange = e => {
+    console.log(e);
+    this.setState({
+      amountFiat: e.floatvalue
+    });
+  }
 
   render() {
     const { cryptoPrice, url, amountFiat, amountCrypto } = this.state;
@@ -95,11 +98,11 @@ export default class CashierPOS extends Component {
               </div>
           }
           <div className="pad">
-            <NumberFormat name="amountFiat" value={'0.00'} displayType={'input'} thousandSeparator={true} decimalScale={2} allowNegative={false} prefix={'$'} onValueChange={this.onValueChange}/>
-
-            <Button variant="contained" color="primary" onClick={this.handleClick.bind(this)}>
-              Test
-            </Button>
+            <NumPad.Number
+              label={'Amount'}
+              placeholder={'0'}
+              position={'startTopLeft'}
+            />
           </div>
         </div>
       </article>

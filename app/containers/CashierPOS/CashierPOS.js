@@ -3,7 +3,8 @@ import PropTypes from 'prop-types';
 import { Helmet } from 'react-helmet';
 import axios from 'axios';
 import QRCode from 'qrcode-react';
-import { Button, TextField } from '@material-ui/core/Button';
+import Button from '@material-ui/core/Button';
+import NumberFormat from 'react-number-format';
 
 let BITBOXCli = require('bitbox-cli/lib/bitbox-cli').default;
 let BITBOX = new BITBOXCli();
@@ -24,6 +25,9 @@ export default class CashierPOS extends Component {
       .bind(this);
     this.updatePrices = this
       .updatePrices
+      .bind(this);
+    this.onValueChange = this
+      .onValueChange
       .bind(this);
     this.state = {
       cryptoPrice: [],
@@ -50,48 +54,53 @@ export default class CashierPOS extends Component {
       });
   }
 
-  handleClick = (payAmount) => {
-    if (payAmount == 0) {
+  handleClick = () => {
+    if (this.state.amountFiat === 0) {
       console.log("no amount entered");
       return;
     } else {
-      this.setState({isLoading: true});
-      let paymentValue = this.convertPrice(payAmount);
+      this.setState({ isLoading: true });
+      let paymentValue = this.convertPrice(this.state.amountFiat);
       let paymentURL = getBIP21URL(publickey, paymentValue, "Built by Bitcoin Bay");
       this.updatePrices();
-      this.setState({url: paymentURL, amountCrypto: paymentValue, amountFiat: parseFloat(payAmount), isLoading: false});
+      this.setState({ url: paymentURL, amountCrypto: paymentValue, isLoading: false });
     }
   }
 
+  onValueChange = e => this.setState({
+    amountFiat: e.floatvalue
+  })
+
   render() {
+    const { cryptoPrice, url, amountFiat, amountCrypto } = this.state;
     return (
       <article>
         <Helmet>
           <title>Cashier POS Page</title>
           <meta name="description" content="CashierPOS Page"/>
         </Helmet>
-        <img src={IMG} height="400" width="400"/>
         <h4>CashierPOS</h4>
+        <img src={IMG} height="200" width="200"/>
         <div className="component-app">
           <h4>Price</h4>
-          <p>{this.state.cryptoPrice.CAD}</p>
+          <p>{cryptoPrice.CAD}</p>
           {
-            this.state.url == publickey
+            url == publickey
             ? <QRCode value={defaultWebURL}/>
             : <div>
-                <QRCode value={this.state.url}/>
-                <p>{this.state.url}</p>
+                <QRCode value={url}/>
+                <p>{url}</p>
                 <h4>BCH</h4>
-                <p>{this.state.amountCrypto}</p>
+                <p>{amountCrypto}</p>
               </div>
           }
-          {/*<div className="pad">
-          <TextField id="paymentAmount" value={this.state.amountFiat} />
+          <div className="pad">
+            <NumberFormat name="amountFiat" value={'0.00'} displayType={'input'} thousandSeparator={true} decimalScale={2} allowNegative={false} prefix={'$'} onValueChange={this.onValueChange}/>
+
             <Button variant="contained" color="primary" onClick={this.handleClick.bind(this)}>
               Test
             </Button>
           </div>
-          */}
         </div>
       </article>
     );

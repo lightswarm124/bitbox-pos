@@ -3,19 +3,18 @@ import PropTypes from 'prop-types';
 import { Helmet } from 'react-helmet';
 import axios from 'axios';
 import QRCode from 'qrcode-react';
-import NumPad from 'react-numpad';
 
-let BITBOXCli = require('bitbox-cli/lib/bitbox-cli').default;
-let BITBOX = new BITBOXCli();
+import NumPad from '../../components/NumPad';
 
 import './style.scss';
 import IMG from '../../images/bitcoin-bay.jpg';
 
-let prices = {};
+const BITBOXCli = require('bitbox-cli/lib/bitbox-cli').default;
+const BITBOX = new BITBOXCli();
 
-let publickey = "bitcoincash:qzm47qz5ue99y9yl4aca7jnz7dwgdenl85jkfx3znl";
-
-let defaultWebURL = "https://www.meetup.com/The-Bitcoin-Bay";
+const prices = {};
+const publickey = 'bitcoincash:qzm47qz5ue99y9yl4aca7jnz7dwgdenl85jkfx3znl';
+const defaultWebURL = 'https://www.meetup.com/The-Bitcoin-Bay';
 
 export default class CashierPOS extends Component {
   constructor(props) {
@@ -26,8 +25,8 @@ export default class CashierPOS extends Component {
     this.updatePrices = this
       .updatePrices
       .bind(this);
-    this.onValueChange = this
-      .onValueChange
+    this.onChange = this
+      .onChange
       .bind(this);
     this.state = {
       cryptoPrice: [],
@@ -36,7 +35,7 @@ export default class CashierPOS extends Component {
       amountFiat: 0,
       amountCrypto: 0,
       fiat: 'CAD',
-    }
+    };
   }
 
   componentDidMount() {
@@ -46,7 +45,7 @@ export default class CashierPOS extends Component {
   updatePrices() {
     axios
       .get(`https://min-api.cryptocompare.com/data/pricemulti?fsyms=BCH,BTC,ETC,ETH,LTC&tsyms=${this.state.fiat}`)
-      .then(res => {
+      .then((res) => {
         const crypto = res.data.BCH;
         this.setState({
           cryptoPrice: crypto
@@ -56,54 +55,50 @@ export default class CashierPOS extends Component {
 
   handleClick = (value) => {
     if (value === 0) {
-      console.log("no amount entered");
-      return;
+      console.log('no amount entered');
     } else {
       this.setState({ isLoading: true });
-      let paymentValue = this.convertPrice(value);
-      let paymentURL = getBIP21URL(publickey, paymentValue, "Built by Bitcoin Bay");
+      const paymentValue = this.convertPrice(value);
+      const paymentURL = getBIP21URL(publickey, paymentValue, 'Built by Bitcoin Bay');
       this.updatePrices();
       this.setState({ url: paymentURL, amountCrypto: paymentValue, isLoading: false });
     }
   }
 
-  onValueChange = e => {
+  onChange = (e) => {
     console.log(e);
-    this.setState({
-      amountFiat: e.floatvalue
+/*
+      this.setState({
+      amountFiat: e.target.value
     });
-  }
+*/
+}
 
   render() {
-    const { cryptoPrice, url, amountFiat, amountCrypto } = this.state;
+    const {
+      cryptoPrice, url, amountFiat, amountCrypto
+    } = this.state;
     return (
       <article>
         <Helmet>
           <title>Cashier POS Page</title>
-          <meta name="description" content="CashierPOS Page"/>
+          <meta name="description" content="CashierPOS Page" />
         </Helmet>
         <h4>CashierPOS</h4>
-        <img src={IMG} height="200" width="200"/>
         <div className="component-app">
           <h4>Price</h4>
           <p>{cryptoPrice.CAD}</p>
           {
             url == publickey
-            ? <QRCode value={defaultWebURL}/>
-            : <div>
-                <QRCode value={url}/>
-                <p>{url}</p>
-                <h4>BCH</h4>
-                <p>{amountCrypto}</p>
-              </div>
+              ? <img src={IMG} height="200" width="200" />
+              : <div>
+                  <QRCode value={url} />
+                  <p>{url}</p>
+                  <h4>BCH</h4>
+                  <p>{amountCrypto}</p>
+                </div>
           }
-          <div className="pad">
-            <NumPad.Number
-              label={'Amount'}
-              placeholder={'0'}
-              position={'startTopLeft'}
-            />
-          </div>
+          <NumPad />
         </div>
       </article>
     );

@@ -1,1 +1,2 @@
-export { default } from './NumPad';
+export { default }
+  from './NumPad';

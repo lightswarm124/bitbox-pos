@@ -4,10 +4,15 @@ import { Helmet } from 'react-helmet';
 import axios from 'axios';
 import QRCode from 'qrcode-react';
 
-import NumPad from '../../components/NumPad';
+import Grid from '@material-ui/core/Grid';
+import Paper from '@material-ui/core/Paper';
+import Button from '@material-ui/core/Button';
 
-import './style.scss';
+import {getBIP21URL, generateNewAddress} from '../../services/paymentApi';
+import isNumber from './isNumber';
+import NumPad from '../../components/NumPad';
 import IMG from '../../images/bitcoin-bay.jpg';
+import './style.scss';
 
 const BITBOXCli = require('bitbox-cli/lib/bitbox-cli').default;
 const BITBOX = new BITBOXCli();
@@ -25,9 +30,6 @@ export default class CashierPOS extends Component {
     this.updatePrices = this
       .updatePrices
       .bind(this);
-    this.onChange = this
-      .onChange
-      .bind(this);
     this.state = {
       cryptoPrice: [],
       isLoading: false,
@@ -35,6 +37,9 @@ export default class CashierPOS extends Component {
       amountFiat: 0,
       amountCrypto: 0,
       fiat: 'CAD',
+      total: '',
+      decimal: false,
+      decimalPlace: 2
     };
   }
 
@@ -53,7 +58,7 @@ export default class CashierPOS extends Component {
       });
   }
 
-  handleClick = (value) => {
+  blah = (value) => {
     if (value === 0) {
       console.log('no amount entered');
     } else {
@@ -65,18 +70,52 @@ export default class CashierPOS extends Component {
     }
   }
 
-  onChange = (e) => {
-    console.log(e);
-/*
+  handleClick = event => {
+    let ButtonValue = event.target.value;
+    if (isNumber(ButtonValue)) {
+      if (this.state.decimalPlace === 0) {
+        return;
+      } else if (this.state.decimal) {
+        this.setState({
+          total: this.state.total + ButtonValue,
+          decimalPlace: this.state.decimalPlace - 1
+        });
+      } else {
+        this.setState({
+          total: this.state.total + ButtonValue
+        })
+      }
+    } else if (ButtonValue === "clear") {
       this.setState({
-      amountFiat: e.target.value
-    });
-*/
-}
+        total: '',
+        decimal: false,
+        decimalPlace: 2,
+        amountFiat: 0
+      });
+      console.log(this.state);      
+    } else if (ButtonValue === ".") {
+      if (this.state.total.includes(".")) {
+        return;
+      }
+      console.log(ButtonValue);
+      this.setState({
+        total: this.state.total + ButtonValue,
+        decimal: true
+      })
+    } else if (ButtonValue === "pay") {
+      const paymentValue = parseFloat(this.state.total);
+      this.setState({ isLoading: true });
+      const paymentURL = getBIP21URL(publickey, paymentValue, 'Built by Bitcoin Bay');
+      this.updatePrices();
+      this.setState({ url: paymentURL, amountFiat: paymentValue, isLoading: false });
+    } else {
+      return;
+    }
+  }
 
   render() {
     const {
-      cryptoPrice, url, amountFiat, amountCrypto
+      cryptoPrice, url, amountFiat, amountCrypto, total
     } = this.state;
     return (
       <article>
@@ -89,7 +128,7 @@ export default class CashierPOS extends Component {
           <h4>Price</h4>
           <p>{cryptoPrice.CAD}</p>
           {
-            url == publickey
+            amountFiat === 0
               ? <img src={IMG} height="200" width="200" />
               : <div>
                   <QRCode value={url} />
@@ -98,7 +137,52 @@ export default class CashierPOS extends Component {
                   <p>{amountCrypto}</p>
                 </div>
           }
-          <NumPad />
+          <div className="pad">
+            <Grid container spacing={32}>
+              <Grid item xs={12}>
+                <Paper>{ this.state.total || "Enter Amount" }</Paper>
+              </Grid>
+              <Grid item xs={4}>
+                <Button variant="contained" color="primary" fullWidth size="large" onClick={(value) => {this.handleClick(value)}} value="7">7</Button>
+              </Grid>
+              <Grid item xs={4}>
+                <Button variant="contained" color="primary" fullWidth size="large" onClick={(value) => {this.handleClick(value)}} value="8">8</Button>
+              </Grid>
+              <Grid item xs={4}>
+                <Button variant="contained" color="primary" fullWidth size="large" onClick={(value) => {this.handleClick(value)}} value="9">9</Button>
+              </Grid>
+              <Grid item xs={4}>
+                <Button variant="contained" color="primary" fullWidth size="large" onClick={(value) => {this.handleClick(value)}} value="4">4</Button>
+              </Grid>
+              <Grid item xs={4}>
+                <Button variant="contained" color="primary" fullWidth size="large" onClick={(value) => {this.handleClick(value)}} value="5">5</Button>
+              </Grid>
+              <Grid item xs={4}>
+                <Button variant="contained" color="primary" fullWidth size="large" onClick={(value) => {this.handleClick(value)}} value="6">6</Button>
+              </Grid>
+              <Grid item xs={4}>
+                <Button variant="contained" color="primary" fullWidth size="large" onClick={(value) => {this.handleClick(value)}} value="1">1</Button>
+              </Grid>
+              <Grid item xs={4}>
+                <Button variant="contained" color="primary" fullWidth size="large" onClick={(value) => {this.handleClick(value)}} value="2">2</Button>
+              </Grid>
+              <Grid item xs={4}>
+                <Button variant="contained" color="primary" fullWidth size="large" onClick={(value) => {this.handleClick(value)}} value="3">3</Button>
+              </Grid>
+              <Grid item xs={4}>
+                <Button variant="contained" color="primary" fullWidth size="large" onClick={(value) => {this.handleClick(value)}} value="clear">Clear</Button>
+              </Grid>
+              <Grid item xs={4}>
+                <Button variant="contained" color="primary" fullWidth size="large" onClick={(value) => {this.handleClick(value)}} value=".">.</Button>
+              </Grid>
+              <Grid item xs={4}>
+                <Button variant="contained" color="primary" fullWidth size="large" onClick={(value) => {this.handleClick(value)}} value="0">0</Button>
+              </Grid>
+              <Grid item xs={12}>
+                <Button variant="contained" color="primary" fullWidth size="large" onClick={(value) => {this.handleClick(value)}} value="pay">Pay</Button>
+              </Grid>
+            </Grid>
+          </div>
         </div>
       </article>
     );

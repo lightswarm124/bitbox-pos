@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
+import Button from '@material-ui/core/Button';
 
 import isNumber from './isNumber';
 
@@ -9,24 +9,48 @@ export default class NumPad extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      total: null,
-      next: null
+      total: '',
+      decimal: false,
+      decimalPlace: 2
     };
   }
 
-  handleClick = buttonName => {
-    console.log(buttonName);
-    if (buttonName === "clear") {
+  handleClick = event => {
+    let ButtonValue = event.target.value;
+    if (isNumber(ButtonValue)) {
+      if (this.state.decimalPlace === 0) {
+        return;
+      } else if (this.state.decimal) {
+        this.setState({
+          total: this.state.total + ButtonValue,
+          decimalPlace: this.state.decimalPlace - 1
+        });
+      } else {
+        this.setState({
+          total: this.state.total + ButtonValue
+        })
+      }
+    } else if (ButtonValue === "clear") {
+      console.log(ButtonValue);
       this.setState({
-        total: null,
-        next: null
-      });
-    }
-
-    if (isNumber(buttonName)) {
-      if (buttonName === "0" && this.state.next === "0") {
+        total: '',
+        decimal: false,
+        decimalPlace: 2
+      })
+    } else if (ButtonValue === ".") {
+      if (this.state.total.includes(".")) {
         return;
       }
+      console.log(ButtonValue);
+      this.setState({
+        total: this.state.total + ButtonValue,
+        decimal: true
+      })
+    } else if (ButtonValue === "pay") {
+      const balance = parseFloat(this.state.total);
+      console.log(balance);
+    } else {
+      return;
     }
   }
 
@@ -35,46 +59,46 @@ export default class NumPad extends Component {
       <div className="pad">
         <Grid container spacing={32}>
           <Grid item xs={12}>
-            <Paper>{this.state.next || this.state.total || "Enter Amount"}</Paper>
+            <Paper>{ this.state.total || "Enter Amount" }</Paper>
           </Grid>
           <Grid item xs={4}>
-            <Button fullWidth={true} size="large" onClick={this.handleClick} variant="contained" color="primary" name="7">7</Button>
+            <Button variant="contained" color="primary" fullWidth size="large" onClick={(value) => {this.handleClick(value)}} value="7">7</Button>
           </Grid>
           <Grid item xs={4}>
-            <Button fullWidth={true} size="large" onClick={this.handleClick} variant="contained" color="primary" name="8">8</Button>
+            <Button variant="contained" color="primary" fullWidth size="large" onClick={(value) => {this.handleClick(value)}} value="8">8</Button>
           </Grid>
           <Grid item xs={4}>
-            <Button fullWidth={true} size="large" onClick={this.handleClick} variant="contained" color="primary" name="9">9</Button>
+            <Button variant="contained" color="primary" fullWidth size="large" onClick={(value) => {this.handleClick(value)}} value="9">9</Button>
           </Grid>
           <Grid item xs={4}>
-            <Button fullWidth={true} size="large" onClick={this.handleClick} variant="contained" color="primary" name="4">4</Button>
+            <Button variant="contained" color="primary" fullWidth size="large" onClick={(value) => {this.handleClick(value)}} value="4">4</Button>
           </Grid>
           <Grid item xs={4}>
-            <Button fullWidth={true} size="large" onClick={this.handleClick} variant="contained" color="primary" name="5">5</Button>
+            <Button variant="contained" color="primary" fullWidth size="large" onClick={(value) => {this.handleClick(value)}} value="5">5</Button>
           </Grid>
           <Grid item xs={4}>
-            <Button fullWidth={true} size="large" onClick={this.handleClick} variant="contained" color="primary" name="6">6</Button>
+            <Button variant="contained" color="primary" fullWidth size="large" onClick={(value) => {this.handleClick(value)}} value="6">6</Button>
           </Grid>
           <Grid item xs={4}>
-            <Button fullWidth={true} size="large" onClick={this.handleClick} variant="contained" color="primary" name="1">1</Button>
+            <Button variant="contained" color="primary" fullWidth size="large" onClick={(value) => {this.handleClick(value)}} value="1">1</Button>
           </Grid>
           <Grid item xs={4}>
-            <Button fullWidth={true} size="large" onClick={this.handleClick} variant="contained" color="primary" name="2">2</Button>
+            <Button variant="contained" color="primary" fullWidth size="large" onClick={(value) => {this.handleClick(value)}} value="2">2</Button>
           </Grid>
           <Grid item xs={4}>
-            <Button fullWidth={true} size="large" onClick={this.handleClick} variant="contained" color="primary" name="3">3</Button>
+            <Button variant="contained" color="primary" fullWidth size="large" onClick={(value) => {this.handleClick(value)}} value="3">3</Button>
           </Grid>
           <Grid item xs={4}>
-            <Button fullWidth={true} size="large" onClick={this.handleClick} variant="contained" color="primary" name="clear">Clear</Button>
+            <Button variant="contained" color="primary" fullWidth size="large" onClick={(value) => {this.handleClick(value)}} value="clear">Clear</Button>
           </Grid>
           <Grid item xs={4}>
-            <Button fullWidth={true} size="large" onClick={this.handleClick} variant="contained" color="primary" name=".">.</Button>
+            <Button variant="contained" color="primary" fullWidth size="large" onClick={(value) => {this.handleClick(value)}} value=".">.</Button>
           </Grid>
           <Grid item xs={4}>
-            <Button fullWidth={true} size="large" onClick={this.handleClick} variant="contained" color="primary" name="0">0</Button>
+            <Button variant="contained" color="primary" fullWidth size="large" onClick={(value) => {this.handleClick(value)}} value="0">0</Button>
           </Grid>
           <Grid item xs={12}>
-            <Button fullWidth={true} size="large" onClick={this.handleClick} variant="contained" color="primary" name="pay">Pay</Button>
+            <Button variant="contained" color="primary" fullWidth size="large" onClick={(value) => {this.handleClick(value)}} value="pay">Pay</Button>
           </Grid>
         </Grid>
       </div>

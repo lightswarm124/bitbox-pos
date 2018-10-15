@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { Helmet } from 'react-helmet';
 import axios from 'axios';
 import QRCode from 'qrcode-react';
+import openSocket from 'socket.io-client';
 
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
@@ -16,16 +17,19 @@ import './style.scss';
 
 const BITBOXCli = require('bitbox-cli/lib/bitbox-cli').default;
 const BITBOX = new BITBOXCli();
-
 const prices = {};
 const publickey = 'bitcoincash:qzm47qz5ue99y9yl4aca7jnz7dwgdenl85jkfx3znl';
 const defaultWebURL = 'https://www.meetup.com/The-Bitcoin-Bay';
+const socket = openSocket('http://localhost:3000');
 
 export default class CashierPOS extends Component {
   constructor(props) {
     super(props);
     this.handleClick = this
       .handleClick
+      .bind(this);
+    this.sendSocketIO = this
+      .sendSocketIO
       .bind(this);
     this.updatePrices = this
       .updatePrices
@@ -39,7 +43,8 @@ export default class CashierPOS extends Component {
       fiat: 'CAD',
       total: '',
       decimal: false,
-      decimalPlace: 2
+      decimalPlace: 2,
+      socketData: []
     };
   }
 
@@ -58,16 +63,13 @@ export default class CashierPOS extends Component {
       });
   }
 
-  blah = (value) => {
-    if (value === 0) {
-      console.log('no amount entered');
-    } else {
-      this.setState({ isLoading: true });
-      const paymentValue = this.convertPrice(value);
-      const paymentURL = getBIP21URL(publickey, paymentValue, 'Built by Bitcoin Bay');
-      this.updatePrices();
-      this.setState({ url: paymentURL, amountCrypto: paymentValue, isLoading: false });
-    }
+  sendSocketIO(msg) {
+    socket.emit('event', msg);
+  }
+
+  convertPrice(fiat) {
+    let convertedAmount = parseFloat(((parseFloat(1 / (this.state.cryptoPrice.CAD))) * fiat));
+    return convertedAmount;
   }
 
   handleClick = event => {
@@ -91,8 +93,8 @@ export default class CashierPOS extends Component {
         decimal: false,
         decimalPlace: 2,
         amountFiat: 0
-      });
-      console.log(this.state);      
+      })
+
     } else if (ButtonValue === ".") {
       if (this.state.total.includes(".")) {
         return;
@@ -102,12 +104,13 @@ export default class CashierPOS extends Component {
         total: this.state.total + ButtonValue,
         decimal: true
       })
-    } else if (ButtonValue === "pay") {
-      const paymentValue = parseFloat(this.state.total);
+    } else if (ButtonValue === "pay" && this.state.total != '') {
       this.setState({ isLoading: true });
+      const paymentValue = this.convertPrice(this.state.total);
       const paymentURL = getBIP21URL(publickey, paymentValue, 'Built by Bitcoin Bay');
       this.updatePrices();
-      this.setState({ url: paymentURL, amountFiat: paymentValue, isLoading: false });
+      this.setState({ url: paymentURL, amountFiat: this.state.total, amountCrypto: paymentValue, isLoading: false });
+      this.sendSocketIO(paymentValue, this.state.total, paymentURL, this.state.cryptoPrice.CAD)
     } else {
       return;
     }
@@ -129,7 +132,7 @@ export default class CashierPOS extends Component {
           <p>{cryptoPrice.CAD}</p>
           {
             amountFiat === 0
-              ? <img src={IMG} height="200" width="200" />
+              ? <img src={IMG} height="200" width="200" alt="logo" />
               : <div>
                   <QRCode value={url} />
                   <p>{url}</p>

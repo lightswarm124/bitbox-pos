@@ -72,7 +72,7 @@ export default class CashierPOS extends Component {
     return convertedAmount;
   }
 
-  handleClick = event => {
+  async handleClick(event) {
     let ButtonValue = event.target.value;
     if (isNumber(ButtonValue)) {
       if (this.state.decimalPlace === 0) {
@@ -110,7 +110,6 @@ export default class CashierPOS extends Component {
       const paymentURL = getBIP21URL(publickey, paymentValue, 'Built by Bitcoin Bay');
       this.updatePrices();
       this.setState({ url: paymentURL, amountFiat: this.state.total, amountCrypto: paymentValue, isLoading: false });
-      this.sendSocketIO(paymentValue, this.state.total, paymentURL, this.state.cryptoPrice.CAD)
     } else {
       return;
     }
@@ -183,6 +182,9 @@ export default class CashierPOS extends Component {
               </Grid>
               <Grid item xs={12}>
                 <Button variant="contained" color="primary" fullWidth size="large" onClick={(value) => {this.handleClick(value)}} value="pay">Pay</Button>
+              </Grid>
+              <Grid item xs={12}>
+                <Button variant="contained" color="primary" fullWidth size="large" onClick={() => {this.sendSocketIO([this.state.amountCrypto, this.state.amountFiat, this.state.url, this.state.cryptoPrice.CAD])}} value="display">Display</Button>
               </Grid>
             </Grid>
           </div>

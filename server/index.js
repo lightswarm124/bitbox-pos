@@ -1,5 +1,6 @@
 /* eslint consistent-return:0 */
-
+const morgan = require('morgan');
+const bodyParser = require('body-parser');
 const express = require('express');
 const app = express();
 const { resolve } = require('path');
@@ -27,20 +28,24 @@ const host = customHost || null; // Let http.Server use its default IPv6/4 host
 const prettyHost = customHost || 'localhost';
 
 // Start your app.
-app.listen(port, host, (err) => {
+http.listen(port, host, (err) => {
   if (err) {
     return logger.error(err.message);
   }
   logger.appStarted(port, prettyHost);
 });
 
-io.on('connection', socket => {
-  console.log('User connected');
-  socket.on('event', message => {
-    console.log(message);
-    io.emit('event', message);
-  })
+io.on('connection', (socket) => {
+  console.log('user connected');
+  socket.on('event', (msg) => {
+    console.log(msg);
+    io.emit('event', msg);
+  });
   socket.on('disconnect', () => {
-    console.log('User disconnected');
+    console.log('user disconnected');
   });
 });
+
+app.use(morgan('dev'));
+app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.json());

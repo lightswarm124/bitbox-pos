@@ -1,12 +1,17 @@
 /* eslint consistent-return:0 */
-const morgan = require('morgan');
-const bodyParser = require('body-parser');
+require('dotenv').config()
+
+const { resolve } = require('path');
 const express = require('express');
 const app = express();
-const { resolve } = require('path');
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
+const morgan = require('morgan');
+const bodyParser = require('body-parser');
+const session = require('express-session');
+const MongoStore = require('connect-mongo')(session);
 
+const dbConnection = require('./database');
 const logger = require('./util//logger');
 const argv = require('./util/argv');
 const port = require('./util//port');
@@ -36,16 +41,23 @@ http.listen(port, host, (err) => {
 });
 
 io.on('connection', (socket) => {
-  console.log('user connected');
+  console.log('socket io user connected');
   socket.on('event', (msg) => {
     console.log(msg);
     io.emit('event', msg);
   });
   socket.on('disconnect', () => {
-    console.log('user disconnected');
+    console.log('socket io user disconnected');
   });
 });
 
 app.use(morgan('dev'));
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
+
+app.use(session({
+  secret: 'fraggle-rock', // pick a random string to make the hash that is generated secure
+  store: new MongoStore({mongooseConnection: dbConnection}),
+  resave: false, // required
+  saveUninitialized: false, // required
+}));

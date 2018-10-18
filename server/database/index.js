@@ -1,7 +1,8 @@
 // Connect to Mongo database
 const mongoose = require('mongoose');
-
+// Remove the warning with Promise
 mongoose.Promise = global.Promise;
+
 const configDB = require('../../config/mongo/keys');
 
 try {

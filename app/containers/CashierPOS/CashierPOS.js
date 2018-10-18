@@ -15,7 +15,7 @@ import NumPad from '../../components/NumPad';
 import IMG from '../../images/bitcoin-bay.jpg';
 import './style.scss';
 
-const BITBOXCli = require('bitbox-cli/lib/bitbox-cli').default;
+const BITBOXCli = require('bitbox-sdk/lib/bitbox-sdk').default;
 const BITBOX = new BITBOXCli();
 const prices = {};
 const publickey = 'bitcoincash:qzm47qz5ue99y9yl4aca7jnz7dwgdenl85jkfx3znl';

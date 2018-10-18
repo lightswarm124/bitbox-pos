@@ -1,5 +1,5 @@
 {
-  "name": "bitbox-pos",
+  "name": "cryptoPOS",
   "version": "0.0.1",
   "description": "A minimal react-redux boilerplate with all the best practices for bitcoin cash",
   "repository": {
@@ -34,11 +34,12 @@
     "babel-polyfill": "6.26.0",
     "bcryptjs": "^2.4.3",
     "big.js": "^5.2.1",
-    "bitbox-cli": "^1.7.1",
+    "bitbox-sdk": "^2.0.3",
     "body-parser": "^1.18.3",
     "chalk": "^2.3.2",
     "compression": "1.7.2",
     "connect-mongo": "^2.0.1",
+    "cors": "^2.8.4",
     "cross-env": "^5.1.6",
     "dotenv": "^6.1.0",
     "express": "4.16.3",
@@ -49,6 +50,7 @@
     "immutable": "3.8.2",
     "invariant": "2.2.4",
     "ip": "1.1.5",
+    "joi": "^14.0.0",
     "lodash": "^4.17.10",
     "minimist": "1.2.0",
     "mongoose": "^5.3.4",
@@ -69,6 +71,7 @@
     "sanitize.css": "4.1.0",
     "socket.io": "^2.1.1",
     "socket.io-client": "^2.1.1",
+    "validator": "^10.8.0",
     "warning": "^4.0.1",
     "whatwg-fetch": "2.0.4"
   },
